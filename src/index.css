@@ -18,7 +18,7 @@
   --gold: #9a6b1f;
 
   --danger: #b3382f;
-  --danger-soft: #fbeceA;
+  --danger-soft: #fbecea;
   --danger-line: #f0c9c5;
   --warn: #8a5410;
   --warn-soft: #fbf0da;
@@ -110,14 +110,31 @@ main { animation: rise 0.35s ease both; }
 section, article { border-radius: var(--radius); }
 section[style*="border"], article[style*="border"] { box-shadow: var(--shadow-sm); }
 
-/* Two-column layout for the dashboard and similar pages */
-.page-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; align-items: start; }
-.page-grid > * { grid-column: span 12; margin: 0 !important; }
+/* ---------- Dashboard Grid Layout ---------- */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.page-grid > * {
+  grid-column: span 12;
+  min-width: 0;         /* stops long content from stretching a column */
+  margin: 0 !important; /* overrides inline margins so the gap stays even */
+}
+
 .page-grid > .span-6 { grid-column: span 6; }
 .page-grid > .span-7 { grid-column: span 7; }
 .page-grid > .span-5 { grid-column: span 5; }
+
+/* Tablets and phones: stack everything in one column */
 @media (max-width: 860px) {
-  .page-grid > .span-6, .page-grid > .span-7, .page-grid > .span-5 { grid-column: span 12; }
+  .page-grid > .span-6,
+  .page-grid > .span-7,
+  .page-grid > .span-5 {
+    grid-column: span 12;
+  }
 }
 
 /* ---------- Navbar ---------- */
