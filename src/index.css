@@ -115,7 +115,7 @@ section[style*="border"], article[style*="border"] { box-shadow: var(--shadow-sm
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 20px;
-  align-items: start;
+  align-items: stretch; /* cards in a row share one height */
 }
 
 .page-grid > * {
