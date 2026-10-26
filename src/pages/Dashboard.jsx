@@ -311,6 +311,12 @@ function Dashboard() {
       )
     : 0;
 
+  // A percentage from one or two tasks is misleading ("100% ready" after one
+  // practiced question), so show plain counts until there is enough data.
+  const MIN_TASKS_FOR_PERCENT = 5;
+  const MIN_COMPANY_TASKS_FOR_PERCENT = 3;
+  const hasEnoughPrepData = totalPreparationTasks >= MIN_TASKS_FOR_PERCENT;
+
   const questionProgress = totalQuestions
     ? Math.round((practicedQuestions / totalQuestions) * 100)
     : 0;
@@ -388,6 +394,9 @@ function Dashboard() {
     item.questions.filter((question) => question.isPracticed).length +
     item.revisionTopics.filter((topic) => topic.isCompleted).length;
 
+  const isDueToday = (app) =>
+    app.parsedDeadline.getTime() === today.getTime();
+
   const interviewAction = (interview, priority) => ({
     title: "Get ready for your interview",
     company: interview.company,
@@ -434,15 +443,20 @@ function Dashboard() {
 
     if (upcomingDeadlines.length > 0) {
       const app = upcomingDeadlines[0];
+      const dueToday = isDueToday(app);
 
       return {
-        title: "Prepare for an approaching deadline",
+        title: dueToday
+          ? "Submit before today's deadline"
+          : "Prepare for an approaching deadline",
         company: app.company,
         role: app.role,
-        description: `${app.company} has an application deadline on ${app.parsedDeadline.toLocaleDateString()}. Review your application and finish any outstanding preparation.`,
-        link: `/applications/${app._id}/preparation`,
-        buttonText: "Review preparation",
-        priority: "Coming up",
+        description: dueToday
+          ? `The deadline for ${app.company} is today. Finish and submit your application, or update its status if you already have.`
+          : `${app.company} has an application deadline on ${app.parsedDeadline.toLocaleDateString()}. Review your application and finish any outstanding preparation.`,
+        link: dueToday ? "/applications" : `/applications/${app._id}/preparation`,
+        buttonText: dueToday ? "Open applications" : "Review preparation",
+        priority: dueToday ? "Due today" : "Coming up",
         color: "var(--warn)",
         background: "var(--warn-soft)",
       };
@@ -607,8 +621,11 @@ function Dashboard() {
               fontSize: 13,
             }}
           >
-            {isOverdue ? "Overdue: " : "Due "}
-            {app.parsedDeadline.toLocaleDateString()}
+            {isOverdue
+              ? `Overdue: ${app.parsedDeadline.toLocaleDateString()}`
+              : app.parsedDeadline.getTime() === today.getTime()
+                ? "Due today"
+                : `Due ${app.parsedDeadline.toLocaleDateString()}`}
           </p>
         </div>
 
@@ -1296,13 +1313,17 @@ function Dashboard() {
         >
           <div style={{ padding: 16, borderRadius: 12, backgroundColor: "var(--surface)" }}>
             <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
-              Readiness progress
+              {hasEnoughPrepData ? "Readiness progress" : "Tasks completed"}
             </p>
             <h2 style={{ color: "var(--accent)", fontSize: 30, margin: "8px 0" }}>
-              {readinessRate}%
+              {hasEnoughPrepData
+                ? `${readinessRate}%`
+                : `${completedPreparationTasks}/${totalPreparationTasks}`}
             </h2>
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
-              {completedPreparationTasks} of {totalPreparationTasks} tasks completed
+              {hasEnoughPrepData
+                ? `${completedPreparationTasks} of ${totalPreparationTasks} tasks completed`
+                : "Add more questions and topics to see a percentage"}
             </p>
           </div>
 
@@ -1314,7 +1335,9 @@ function Dashboard() {
               {practicedQuestions}/{totalQuestions}
             </h2>
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
-              {questionProgress}% of saved questions
+              {hasEnoughPrepData
+                ? `${questionProgress}% of saved questions`
+                : "saved questions practiced"}
             </p>
           </div>
 
@@ -1326,7 +1349,9 @@ function Dashboard() {
               {completedRevisionTopics}/{totalRevisionTopics}
             </h2>
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
-              {revisionProgress}% of saved topics
+              {hasEnoughPrepData
+                ? `${revisionProgress}% of saved topics`
+                : "saved topics completed"}
             </p>
           </div>
         </div>
@@ -1341,7 +1366,11 @@ function Dashboard() {
           }}
         >
           <strong>Overall preparation progress</strong>
-          <strong>{readinessRate}%</strong>
+          <strong>
+            {hasEnoughPrepData
+              ? `${readinessRate}%`
+              : `${completedPreparationTasks} of ${totalPreparationTasks} tasks`}
+          </strong>
         </div>
 
         <div
@@ -1437,7 +1466,11 @@ function Dashboard() {
                         color: percentage === null ? "var(--muted)" : "var(--accent)",
                       }}
                     >
-                      {percentage === null ? "Not started" : `${percentage}% ready`}
+                      {percentage === null
+                        ? "Not started"
+                        : taskCount >= MIN_COMPANY_TASKS_FOR_PERCENT
+                          ? `${percentage}% ready`
+                          : `${completedCount}/${taskCount} done`}
                     </span>
                   </div>
 
