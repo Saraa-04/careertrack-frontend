@@ -507,7 +507,7 @@ function Analytics() {
           >
             <p style={{ margin: 0, fontSize: "14px", color: "var(--ink-2)" }}>
               <strong>{goalStats.count}</strong> of{" "}
-              <strong>{goalStats.target}</strong> applications Created this week
+              <strong>{goalStats.target}</strong> applications created this week
 
             </p>
 
