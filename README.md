@@ -2,13 +2,21 @@
 
 A job-search tracker for managing applications, deadlines and interview preparation in one place. This repository is the React frontend; it talks to a separate REST API.
 
-<!--
-Add 3-4 screenshots here once you have the app running with real data, e.g.
-![Dashboard](docs/screenshots/dashboard.png)
-![Applications](docs/screenshots/applications.png)
-Live demo: https://your-deployed-url
-Backend repo: https://github.com/your-username/your-backend-repo
--->
+**Live demo:** https://careertrack-app.onrender.com
+
+**Demo account:** `careertrack@demo` / `demo0123` 
+
+> The backend runs on Render's free plan, so the first request after a quiet period can take 30-60 seconds while the server wakes up.
+
+**Backend repository:** https://github.com/Saraa-04/careertrack-backend
+
+## Screenshots
+
+
+![Dashboard](Docs/screenshots/dashboard.png)
+![Mobile layouts](Docs/screenshots/mobile.png)
+![Interview preparation](Docs/screenshots/interview-prep.png)
+
 
 ## Why I built it
 
@@ -37,7 +45,7 @@ Tracking a job search in a spreadsheet means missed deadlines and scattered inte
 
 ## Project structure
 
-```
+
 src/
   components/   Navbar, AuthShell (shared auth layout)
   pages/        Dashboard, Applications, Analytics, InterviewPreparation, Notes, login, register
@@ -45,7 +53,7 @@ src/
   services/     apiClient.js (all HTTP, auth header, 401 handling) + one file per API area
   utils/        dates.js (shared date helpers)
   index.css     Design tokens and shared component styles
-```
+
 
 All network calls go through `services/apiClient.js`, which adds the bearer token, parses errors into readable messages, and on a 401 clears the saved token and redirects to login.
 
